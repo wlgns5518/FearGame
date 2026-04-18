@@ -6,10 +6,44 @@ public class PlayerInputHandler : MonoBehaviour
     private PlayerMove move;
     private PlayerLook look;
 
+    private PlayerInput playerInput;
+    private InputAction sprintAction;
+    private InputAction jumpAction;
+
     private void Awake()
     {
         move = GetComponent<PlayerMove>();
         look = GetComponent<PlayerLook>();
+
+        playerInput = GetComponent<PlayerInput>();
+        sprintAction = playerInput.actions["Sprint"];
+        jumpAction = playerInput.actions["Jump"];
+    }
+
+    private void OnEnable()
+    {
+        sprintAction.performed += OnSprintPerformed;
+        sprintAction.canceled += OnSprintCanceled;
+        jumpAction.performed += OnJumpPerformed;
+        jumpAction.canceled += OnJumpCanceled;
+    }
+
+    private void OnDisable()
+    {
+        sprintAction.performed -= OnSprintPerformed;
+        sprintAction.canceled -= OnSprintCanceled;
+        jumpAction.performed -= OnJumpPerformed;
+        jumpAction.canceled -= OnJumpCanceled;
+    }
+
+    private void OnSprintPerformed(InputAction.CallbackContext ctx)
+    {
+        move.SetSprint(true);
+    }
+
+    private void OnSprintCanceled(InputAction.CallbackContext ctx)
+    {
+        move.SetSprint(false);
     }
 
     public void OnMove(InputValue value)
@@ -22,11 +56,13 @@ public class PlayerInputHandler : MonoBehaviour
         look.SetLookInput(value.Get<Vector2>());
     }
 
-    public void OnJump(InputValue value)
+    private void OnJumpPerformed(InputAction.CallbackContext ctx)
     {
-        if (value.isPressed)
-        {
-            move.Jump();
-        }
+        move.Jump();
+    }
+
+    private void OnJumpCanceled(InputAction.CallbackContext ctx)
+    {
+        move.StopJumpCharge();
     }
 }
