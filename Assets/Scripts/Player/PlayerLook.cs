@@ -22,12 +22,7 @@ public class PlayerLook : MonoBehaviour
         lookInput = input;
     }
 
-    private void LateUpdate()
-    {
-        Look();
-    }
-
-    private void Look()
+    public void Look()
     {
         float mouseX = lookInput.x * sensitivity;
         float mouseY = lookInput.y * sensitivity;

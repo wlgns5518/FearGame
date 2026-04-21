@@ -3,128 +3,132 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMove : MonoBehaviour
 {
+    #region Movement
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float sprintMultiplier = 2f;
+    public float moveSpeed = 5f;
+    public float sprintMultiplier = 1.5f;
 
+    public Vector2 moveInput;
+    public bool sprinting;
+    #endregion
+
+    #region Jump & Gravity
     [Header("Jump")]
-    [SerializeField] private float jumpHeight = 1.5f;
-    [SerializeField] private float gravity = -9.81f;
-    [SerializeField] private float groundedGravity = -2f;
+    public float jumpHeight = 1.5f;
+    public float gravity = -9.81f;
+    public float groundedGravity = -2f;
 
+    public float verticalVelocity;
+    #endregion
+
+    #region Super Jump (Charge)
     [Header("Super Jump")]
-    [SerializeField] private float chargeTime = 2f;
-    [SerializeField] private float superJumpMultiplier = 20f;
+    public float chargeTime = 2f;
+    public float superJumpMultiplier = 20f;
 
-    private CharacterController controller;
-    private Vector2 moveInput;
-    private float verticalVelocity;
-    private bool jumpRequested;
-    private bool sprinting;
+    public float chargeTimer;
+    public bool isCharging;
 
-    private bool isCharging;
-    private float chargeTimer;
+    public float ChargeRatio => isCharging ? chargeTimer / chargeTime : 0f;
+    public bool IsCharging => isCharging;
+    #endregion
 
+    #region Input State
+    private bool jumpPressed;
+    private bool jumpTriggered;
+
+    public bool JumpPressed => jumpPressed;
+
+    public void SetJumpPressed(bool value)
+    {
+        if (value)
+            jumpTriggered = true;
+
+        jumpPressed = value;
+    }
+
+    public bool ConsumeJumpTriggered()
+    {
+        if (!jumpTriggered) return false;
+
+        jumpTriggered = false;
+        return true;
+    }
+    #endregion
+
+    #region Components
+    public CharacterController controller;
+    #endregion
+
+    #region State Machine
+    private StateMachine stateMachine;
+
+    public GroundedState groundedState;
+    public AirState airState;
+    public ChargeState chargeState;
+    #endregion
+
+    #region Unity Lifecycle
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+
+        stateMachine = new StateMachine();
+
+        groundedState = new GroundedState(this, stateMachine);
+        airState = new AirState(this, stateMachine);
+        chargeState = new ChargeState(this, stateMachine);
     }
 
+    private void Start()
+    {
+        stateMachine.ChangeState(groundedState);
+    }
+
+    public void UpdateState()
+    {
+        stateMachine.Update();
+    }
+    #endregion
+
+    #region Public API (Input 연결)
     public void SetMoveInput(Vector2 input) => moveInput = input;
+    public void SetSprint(bool value) => sprinting = value;
+    #endregion
 
-    public void SetSprint(bool value)
+    #region Physics
+    public void ApplyGravity()
     {
-        sprinting = value;
-
-        if (!value && isCharging)
-        {
-            jumpRequested = true;
-            isCharging = false;
-        }
-    }
-
-    public void Jump()
-    {
-        if (sprinting)
-        {
-            isCharging = true;
-            chargeTimer = 0f;
-        }
-        else
-        {
-            jumpRequested = true;
-        }
-    }
-
-    public void StopJumpCharge()
-    {
-        if (isCharging)
-        {
-            jumpRequested = true;
-            isCharging = false;
-        }
-    }
-
-    private void Update()
-    {
-        HandleCharge();
-        Move();
-    }
-
-    private void HandleCharge()
-    {
-        if (!isCharging) return;
-
-        chargeTimer += Time.deltaTime;
-
-        if (chargeTimer >= chargeTime)
-        {
-            chargeTimer = chargeTime;
-        }
-    }
-
-    private void Move()
-    {
-        bool isGrounded = controller.isGrounded;
-
-        if (isGrounded && verticalVelocity < 0f)
+        if (controller.isGrounded && verticalVelocity < 0f)
             verticalVelocity = groundedGravity;
 
-        if (isGrounded && jumpRequested)
-        {
-            float finalJumpHeight = jumpHeight;
-
-            if (chargeTimer > 0f)
-            {
-                float chargeRatio = Mathf.Clamp01(chargeTimer / chargeTime);
-                float jumpMultiplier = Mathf.Lerp(1f, superJumpMultiplier, chargeRatio);
-                finalJumpHeight *= jumpMultiplier;
-            }
-
-            verticalVelocity = Mathf.Sqrt(finalJumpHeight * -2f * gravity);
-
-            chargeTimer = 0f;
-            isCharging = false;
-        }
-
-        jumpRequested = false;
-
-        // 머리를 박았는지 확인
         if ((controller.collisionFlags & CollisionFlags.Above) != 0 && verticalVelocity > 0f)
-        {
-            verticalVelocity = 0f; // 머리를 박으면 떨어지도록 설정
-        }
+            verticalVelocity = 0f;
 
         verticalVelocity += gravity * Time.deltaTime;
+    }
 
-        Vector3 moveDir = transform.right * moveInput.x + transform.forward * moveInput.y;
-        moveDir = Vector3.ClampMagnitude(moveDir, 1f);
+    public void Move()
+    {
+        Vector3 moveDir = Vector3.ClampMagnitude(
+            transform.right * moveInput.x + transform.forward * moveInput.y, 1f);
 
-        float speed = sprinting ? moveSpeed * sprintMultiplier : moveSpeed;
+        float speed = sprinting && controller.isGrounded
+            ? moveSpeed * sprintMultiplier
+            : moveSpeed;
 
         Vector3 velocity = moveDir * speed;
         velocity.y = verticalVelocity;
 
         controller.Move(velocity * Time.deltaTime);
     }
+    #endregion
+
+    #region Actions
+    public void Jump(float multiplier)
+    {
+        float finalJumpHeight = jumpHeight * multiplier;
+        verticalVelocity = Mathf.Sqrt(finalJumpHeight * -2f * gravity);
+    }
+    #endregion
 }
