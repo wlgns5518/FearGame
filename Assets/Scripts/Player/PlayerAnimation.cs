@@ -19,16 +19,22 @@ public class PlayerAnimation : MonoBehaviour
 
         UpdateAnimation();
     }
+    private bool wasGrounded;
 
     private void UpdateAnimation()
     {
         float speed = playerMove.moveInput.magnitude;
         bool isGrounded = playerMove.controller.isGrounded;
-        float verticalVelocity = playerMove.verticalVelocity;
 
-        // 파라미터 세팅
         animator.SetFloat("Speed", speed);
         animator.SetBool("IsGrounded", isGrounded);
-        animator.SetFloat("VerticalVelocity", verticalVelocity);
+
+        // 점프 시작 순간 감지
+        if (wasGrounded && !isGrounded)
+        {
+            animator.SetTrigger("Jump");
+        }
+
+        wasGrounded = isGrounded;
     }
 }
