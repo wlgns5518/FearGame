@@ -1,20 +1,20 @@
+// PlayerInputHandler.cs
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.LowLevel;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    private PlayerMove move;
+    private PlayerHFSM hfsm;
     private PlayerLook look;
-
     private PlayerInput playerInput;
     private InputAction sprintAction;
     private InputAction jumpAction;
 
     private void Awake()
     {
-        move = GetComponent<PlayerMove>();
+        hfsm = GetComponent<PlayerHFSM>();
         look = GetComponent<PlayerLook>();
-
         playerInput = GetComponent<PlayerInput>();
         sprintAction = playerInput.actions["Sprint"];
         jumpAction = playerInput.actions["Jump"];
@@ -24,7 +24,6 @@ public class PlayerInputHandler : MonoBehaviour
     {
         sprintAction.performed += OnSprintPerformed;
         sprintAction.canceled += OnSprintCanceled;
-
         jumpAction.performed += OnJumpPerformed;
         jumpAction.canceled += OnJumpCanceled;
     }
@@ -33,14 +32,13 @@ public class PlayerInputHandler : MonoBehaviour
     {
         sprintAction.performed -= OnSprintPerformed;
         sprintAction.canceled -= OnSprintCanceled;
-
         jumpAction.performed -= OnJumpPerformed;
         jumpAction.canceled -= OnJumpCanceled;
     }
 
     public void OnMove(InputValue value)
     {
-        move.SetMoveInput(value.Get<Vector2>());
+        hfsm.Context.moveInput = value.Get<Vector2>();
     }
 
     public void OnLook(InputValue value)
@@ -49,22 +47,14 @@ public class PlayerInputHandler : MonoBehaviour
     }
 
     private void OnSprintPerformed(InputAction.CallbackContext ctx)
-    {
-        move.SetSprint(true);
-    }
+        => hfsm.Context.sprinting = true;
 
     private void OnSprintCanceled(InputAction.CallbackContext ctx)
-    {
-        move.SetSprint(false);
-    }
+        => hfsm.Context.sprinting = false;
 
     private void OnJumpPerformed(InputAction.CallbackContext ctx)
-    {
-        move.SetJumpPressed(true);
-    }
+        => hfsm.Context.SetJumpPressed(true);
 
     private void OnJumpCanceled(InputAction.CallbackContext ctx)
-    {
-        move.SetJumpPressed(false);
-    }
+        => hfsm.Context.SetJumpPressed(false);
 }

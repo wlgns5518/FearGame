@@ -1,23 +1,26 @@
+// PlayerController.cs
 using UnityEngine;
+using UnityEngine.LowLevel;
 
 public class PlayerController : MonoBehaviour
 {
-    public PlayerMove move;
-    public PlayerLook look;
-    public PlayerUI UI;
+    private PlayerHFSM hfsm;
+    private PlayerLook look;
+    private PlayerUI ui;
 
     private void Awake()
     {
-        move = GetComponent<PlayerMove>();
+        hfsm = GetComponent<PlayerHFSM>();
         look = GetComponent<PlayerLook>();
-        UI = GetComponent<PlayerUI>();
+        ui = GetComponent<PlayerUI>();
     }
 
     private void Update()
     {
-        move.UpdateState();
-
-        UI.UpdateChargeUI(move.ChargeRatio, move.IsCharging);
+        ui.UpdateChargeUI(
+            hfsm.Context.ChargeRatio,
+            hfsm.Context.isCharging
+        );
     }
 
     private void LateUpdate()
