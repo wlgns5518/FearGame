@@ -14,11 +14,10 @@ public class EnemyFallingState : State<EnemyContext>
     {
         context.ApplyGravityAndMove();
 
-        if (context.controller.isGrounded)
+        if (context.controller.isGrounded && context.verticalVelocity <= 0f)
         {
-            context.agent.enabled = true;
-            context.agent.Warp(context.transform.position);
-            parent.GoToMove();
+            if (context.WarpToNavMesh())
+                parent.GoToMove();
         }
     }
 

@@ -1,4 +1,4 @@
-// NavMeshHelper.cs
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -6,36 +6,69 @@ public static class NavMeshHelper
 {
     public static Vector3 GetRandomSpawnPosition()
     {
-        int walkableAreaMask = 1 << NavMesh.GetAreaFromName("Walkable");
+        int walkableIndex = NavMesh.GetAreaFromName("Walkable");
+        if (walkableIndex < 0) { Debug.LogError("'Walkable' Area 없음"); return Vector3.zero; }
+        int walkableMask = 1 << walkableIndex;
 
         NavMeshTriangulation triangulation = NavMesh.CalculateTriangulation();
+        if (triangulation.vertices.Length == 0) return Vector3.zero;
 
-        if (triangulation.vertices.Length == 0)
+        // Walkable 삼각형만 수집
+        List<int> validTriangles = new List<int>();
+        for (int i = 0; i < triangulation.indices.Length / 3; i++)
         {
-            Debug.LogWarning("NavMesh가 없습니다.");
-            return Vector3.zero;
+            if ((1 << triangulation.areas[i] & walkableMask) != 0)
+                validTriangles.Add(i);
         }
 
-        Bounds bounds = new Bounds(triangulation.vertices[0], Vector3.zero);
-        foreach (Vector3 vertex in triangulation.vertices)
-            bounds.Encapsulate(vertex);
+        if (validTriangles.Count == 0) { Debug.LogError("Walkable 삼각형 없음"); return Vector3.zero; }
 
-        int maxAttempts = 100;
-
-        for (int i = 0; i < maxAttempts; i++)
+        // 랜덤 삼각형에서 점 추출  맵 크기 상관없이 항상 NavMesh 위
+        for (int i = 0; i < 30; i++)
         {
-            Vector3 randomPosition = new Vector3(
-                Random.Range(bounds.min.x, bounds.max.x),
-                bounds.center.y,
-                Random.Range(bounds.min.z, bounds.max.z)
-            );
+            int triIndex = validTriangles[Random.Range(0, validTriangles.Count)];
+            Vector3 v0 = triangulation.vertices[triangulation.indices[triIndex * 3]];
+            Vector3 v1 = triangulation.vertices[triangulation.indices[triIndex * 3 + 1]];
+            Vector3 v2 = triangulation.vertices[triangulation.indices[triIndex * 3 + 2]];
+
+            float r1 = Mathf.Sqrt(Random.value);
+            float r2 = Random.value;
+            Vector3 randomPoint = (1 - r1) * v0 + (r1 * (1 - r2)) * v1 + (r1 * r2) * v2;
 
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(randomPosition, out hit, 10f, walkableAreaMask))
+            if (NavMesh.SamplePosition(randomPoint, out hit, 2f, walkableMask))
                 return hit.position;
         }
 
-        Debug.LogWarning("Walkable Area에서 위치를 찾지 못했습니다.");
+        return Vector3.zero;
+    }
+    public static Vector3 GetRandomWalkablePosition(Vector3 fromPosition, float radius = 15f)
+    {
+        int walkableIndex = NavMesh.GetAreaFromName("Walkable");
+        if (walkableIndex < 0) { Debug.LogError("'Walkable' Area 없음"); return Vector3.zero; }
+        int walkableMask = 1 << walkableIndex;
+
+        for (int i = 0; i < 30; i++)
+        {
+            Vector2 rand = Random.insideUnitCircle * radius;
+            Vector3 candidate = fromPosition + new Vector3(rand.x, 0f, rand.y);
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(candidate, out hit, 3f, walkableMask))
+                return hit.position;
+        }
+
+        // 근처에서 못찾으면 반경 늘려서 재시도
+        for (int i = 0; i < 30; i++)
+        {
+            Vector2 rand = Random.insideUnitCircle * (radius * 3f);
+            Vector3 candidate = fromPosition + new Vector3(rand.x, 0f, rand.y);
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(candidate, out hit, 3f, walkableMask))
+                return hit.position;
+        }
+
         return Vector3.zero;
     }
 }

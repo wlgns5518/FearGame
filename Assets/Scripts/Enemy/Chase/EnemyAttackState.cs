@@ -1,6 +1,4 @@
-// EnemyAttackState.cs
 using UnityEngine;
-
 public class EnemyAttackState : State<EnemyContext>
 {
     private EnemyChaseState parent;
@@ -14,7 +12,7 @@ public class EnemyAttackState : State<EnemyContext>
     public override void Enter()
     {
         context.attackTimer = 0f;
-        context.agent.ResetPath();
+        context.ResetPath();
         playerRespawn = context.player.GetComponent<PlayerRespawn>();
     }
 
@@ -27,7 +25,6 @@ public class EnemyAttackState : State<EnemyContext>
         }
 
         context.attackTimer += Time.deltaTime;
-
         if (context.attackTimer >= context.data.attackCooldown)
         {
             Attack();

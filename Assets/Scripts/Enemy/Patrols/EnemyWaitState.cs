@@ -13,7 +13,9 @@ public class EnemyWaitState : State<EnemyContext>
     public override void Enter()
     {
         context.waitTimer = 0f;
-        context.agent.ResetPath();
+
+        if (context.agent.enabled && context.agent.isOnNavMesh)
+            context.agent.ResetPath();
     }
 
     public override void Update()
@@ -21,9 +23,7 @@ public class EnemyWaitState : State<EnemyContext>
         context.waitTimer += Time.deltaTime;
 
         if (context.waitTimer >= context.data.waitTime)
-        {
             parent.GoToWalk();
-        }
     }
 
     public override void Exit() { }

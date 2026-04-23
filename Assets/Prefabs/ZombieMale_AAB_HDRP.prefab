@@ -1214,7 +1214,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 2420795462371207337}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.2
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -1252,7 +1252,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHFSM
   enemyData: {fileID: 11400000, guid: ad5586650234ef3448914770aa0decfd, type: 2}
-  player: {fileID: 0}
 --- !u!143 &1039808342645522015
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1273,8 +1272,8 @@ CharacterController:
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_SlopeLimit: 60
+  m_StepOffset: 0.5
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}

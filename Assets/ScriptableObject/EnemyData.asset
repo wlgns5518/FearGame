@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   moveSpeed: 3
   chaseSpeed: 6
-  detectionRange: 50
+  detectionRange: 20
   attackRange: 2
   waitTime: 2
   patrolRadius: 20

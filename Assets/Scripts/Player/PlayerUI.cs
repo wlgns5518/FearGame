@@ -1,4 +1,3 @@
-// PlayerUI.cs
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -7,12 +6,16 @@ public class PlayerUI : MonoBehaviour
 {
     [SerializeField] private Slider chargeSlider;
     [SerializeField] private TextMeshProUGUI keyText;
+    [SerializeField] private GameObject winPanel;
 
     private int keyCount = 0;
+    private const int RequiredKeys = 3;
 
     private void Start()
     {
         UpdateKeyText();
+        if (winPanel != null)
+            winPanel.SetActive(false);
     }
 
     public void UpdateChargeUI(float ratio, bool isCharging)
@@ -35,8 +38,22 @@ public class PlayerUI : MonoBehaviour
         UpdateKeyText();
     }
 
+    public bool HasEnoughKeys() => keyCount >= RequiredKeys;
+
+    public void UseKeys()
+    {
+        keyCount -= RequiredKeys;
+        UpdateKeyText();
+    }
+
     private void UpdateKeyText()
     {
-        keyText.text = $"Key : {keyCount}";
+        keyText.text = $"Key : {keyCount} / {RequiredKeys}";
+    }
+
+    public void ShowWinScreen()
+    {
+        if (winPanel != null)
+            winPanel.SetActive(true);
     }
 }

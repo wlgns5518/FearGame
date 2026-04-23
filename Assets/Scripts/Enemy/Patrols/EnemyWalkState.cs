@@ -1,10 +1,12 @@
-// EnemyWalkState.cs
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyWalkState : State<EnemyContext>
 {
     private EnemyPatrolState parent;
+    private float stuckTimer;
+    private const float StuckThreshold = 2f;
+    private Vector3 lastPosition;
 
     public EnemyWalkState(EnemyContext context, EnemyPatrolState parent) : base(context)
     {
@@ -13,36 +15,57 @@ public class EnemyWalkState : State<EnemyContext>
 
     public override void Enter()
     {
-        MoveToRandomPosition();
+        stuckTimer = 0f;
+        lastPosition = context.transform.position;
+        MoveToRandom();
     }
 
     public override void Update()
     {
+        if (context.agent.pathPending) return;
+
+        // 목적지 도착
         if (context.ReachedDestination())
         {
             parent.GoToWait();
+            return;
+        }
+
+        // 경로 막힘 → 점프
+        if (context.IsPathBlocked())
+        {
+            parent.GoToJump();
+            return;
+        }
+
+        // stuck 감지
+        float moved = Vector3.Distance(context.transform.position, lastPosition);
+        if (moved < 0.05f)
+        {
+            stuckTimer += Time.deltaTime;
+            if (stuckTimer >= StuckThreshold)
+            {
+                stuckTimer = 0f;
+                // 장애물 있으면 점프, 없으면 새 위치로
+                if (context.ObstacleAhead())
+                    parent.GoToJump();
+                else
+                    MoveToRandom();
+            }
+        }
+        else
+        {
+            stuckTimer = 0f;
+            lastPosition = context.transform.position;
         }
     }
 
     public override void Exit() { }
 
-    private void MoveToRandomPosition()
+    private void MoveToRandom()
     {
-        Vector3 randomPosition = GetRandomNavMeshPosition();
-        context.MoveToPosition(randomPosition, context.data.moveSpeed);
-    }
-
-    private Vector3 GetRandomNavMeshPosition()
-    {
-        // 현재 위치 기준 랜덤 방향으로 순찰 반경 내 위치 탐색
-        Vector3 randomDirection = Random.insideUnitSphere * context.data.patrolRadius;
-        randomDirection += context.transform.position;
-
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomDirection, out hit, context.data.patrolRadius, NavMesh.AllAreas))
-            return hit.position;
-
-        // 실패 시 현재 위치 반환
-        return context.transform.position;
+        Vector3 pos = NavMeshHelper.GetRandomWalkablePosition(context.transform.position);
+        if (pos != Vector3.zero)
+            context.MoveToPosition(pos, context.data.moveSpeed);
     }
 }

@@ -1,12 +1,11 @@
-// EnemyMoveState.cs
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyMoveState : State<EnemyContext>
 {
     private EnemyChaseState parent;
-
     private float stuckTimer;
-    private float stuckThreshold = 1.5f; // 1.5초 동안 못움직이면 점프
+    private const float StuckThreshold = 1.5f;
     private Vector3 lastPosition;
 
     public EnemyMoveState(EnemyContext context, EnemyChaseState parent) : base(context)
@@ -22,10 +21,7 @@ public class EnemyMoveState : State<EnemyContext>
 
     public override void Update()
     {
-        context.MoveToPosition(
-            context.player.position,
-            context.data.chaseSpeed
-        );
+        context.MoveToPosition(context.player.position, context.data.chaseSpeed);
 
         if (context.PlayerInAttackRange)
         {
@@ -33,32 +29,32 @@ public class EnemyMoveState : State<EnemyContext>
             return;
         }
 
+        if (context.agent.pathPending) return;
+
+        // 경로 막힘 or 장애물 → 점프
+        if (context.IsPathBlocked() || context.ObstacleAhead())
+        {
+            parent.GoToJump();
+            return;
+        }
+
+        // 높이 차이 → 점프
         float heightDiff = context.player.position.y - context.transform.position.y;
-
-        // 장애물 감지
-        if (context.ObstacleAhead())
+        if (heightDiff >= 3f)
         {
             parent.GoToJump();
             return;
         }
 
-        // NavMesh 경로 끊김 감지
-        if (context.IsPathBlocked())
-        {
-            parent.GoToJump();
-            return;
-        }
-
-        // 일정 시간 동안 제자리면 점프
-        float movedDistance = Vector3.Distance(context.transform.position, lastPosition);
-        if (movedDistance < 0.1f)
+        // stuck → 점프
+        float moved = Vector3.Distance(context.transform.position, lastPosition);
+        if (moved < 0.1f)
         {
             stuckTimer += Time.deltaTime;
-            if (stuckTimer >= stuckThreshold)
+            if (stuckTimer >= StuckThreshold)
             {
                 stuckTimer = 0f;
                 parent.GoToJump();
-                return;
             }
         }
         else
@@ -66,16 +62,10 @@ public class EnemyMoveState : State<EnemyContext>
             stuckTimer = 0f;
             lastPosition = context.transform.position;
         }
-
-        // 높이 차이 3 이상이면 점프
-        if (heightDiff >= 3f)
-        {
-            parent.GoToJump();
-        }
     }
 
     public override void Exit()
     {
-        context.agent.ResetPath();
+        context.ResetPath();
     }
 }
