@@ -4,8 +4,7 @@ using UnityEngine;
 public class Key : MonoBehaviour
 {
     [SerializeField] private int keyIndex;
-    [SerializeField] private float pickupRadius = 1.5f;
-    [SerializeField] private float checkInterval = 0.1f; // 0.1초마다 체크
+    [SerializeField] private float checkInterval = 0.1f;
 
     private void Start()
     {
@@ -14,12 +13,13 @@ public class Key : MonoBehaviour
 
     private void CheckPickup()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, pickupRadius);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 1.5f);
 
         foreach (Collider col in colliders)
         {
             if (!col.CompareTag("Player")) continue;
 
+            col.GetComponent<PlayerUI>().AddKey();
             Destroy(gameObject);
             return;
         }
