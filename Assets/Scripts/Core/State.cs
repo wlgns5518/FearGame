@@ -40,5 +40,5 @@ public abstract class State<TContext> : IState
     }
 
     // 현재 하위 상태 조회
-    protected IState CurrentSubState => subStateMachine?.CurrentState;
+    public IState CurrentSubState => subStateMachine?.CurrentState; // protected → public
 }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3910212991524222231}
   - component: {fileID: 6427228219531949647}
   - component: {fileID: 7716346110522700831}
+  - component: {fileID: 6856994516981389567}
   m_Layer: 0
   m_Name: Key3
   m_TagString: Untagged
@@ -106,10 +107,25 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -1215533875317036940, guid: 0669f3d8f4b119f418a4bbe061cc198f, type: 3}
+--- !u!114 &6856994516981389567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7756496594209491955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ed714d98382a446a6d7c4fff201ba5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Key
+  keyIndex: 2
+  pickupRadius: 1.5
+  checkInterval: 0.1

@@ -13,8 +13,8 @@ public class PlayerController : MonoBehaviour
         hfsm = GetComponent<PlayerHFSM>();
         look = GetComponent<PlayerLook>();
         ui = GetComponent<PlayerUI>();
+        GameManager.Instance.player = this;
     }
-
     private void Update()
     {
         ui.UpdateChargeUI(
