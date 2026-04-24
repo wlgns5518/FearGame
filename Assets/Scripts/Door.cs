@@ -2,8 +2,12 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    private PlayerUI playerUI;
+    private PlayerController player;
     private bool isTriggered = false;
+    private void Awake()
+    {
+        GameManager.Instance.door = this;
+    }
 
     // CharacterController°¡ ºÎµúÇûÀ» ¶§ °¨Áö
     private void OnCollisionEnter(Collision collision)
@@ -21,13 +25,13 @@ public class Door : MonoBehaviour
     {
         if (isTriggered) return;
         if (!obj.CompareTag("Player")) return;
-        playerUI = obj.GetComponent<PlayerUI>();
+        player = obj.GetComponent<PlayerController>();
 
-        if (playerUI.HasEnoughKeys())
+        if (player.HasEnoughKeys())
         {
             isTriggered = true;
-            playerUI.UseKeys();
-            playerUI.ShowWinScreen();
+            player.UseKeys();
+            player.ui.ShowText("you win");
         }
         else
         {

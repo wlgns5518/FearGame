@@ -37,5 +37,6 @@ public class EnemyAttackState : State<EnemyContext>
     private void Attack()
     {
         playerRespawn?.Respawn();
+        context.transform.GetComponent<EnemySound>()?.PlayAttack();
     }
 }

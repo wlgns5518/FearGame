@@ -26,6 +26,7 @@ public class PlayerWalkState : State<PlayerContext>
 
         if (context.ConsumeJumpTriggered())
         {
+            context.transform.GetComponent<PlayerSound>().PlayJump(); // Ãß°¡
             context.Jump();
         }
     }

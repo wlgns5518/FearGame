@@ -20,14 +20,11 @@ public class PlayerIdleState : State<PlayerContext>
 
         if (context.ConsumeJumpTriggered())
         {
+            context.transform.GetComponent<PlayerSound>().PlayJump(); // 추가
             if (context.sprinting)
-            {
-                parent.GoToCharge(); // Shift 누른 상태면 차지
-            }
+                parent.GoToCharge();
             else
-            {
-                context.Jump();      // 일반 점프
-            }
+                context.Jump();
         }
     }
 

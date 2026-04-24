@@ -1,21 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class PlayerUI : MonoBehaviour
 {
     [SerializeField] private Slider chargeSlider;
     [SerializeField] private TextMeshProUGUI keyText;
-    [SerializeField] private GameObject winPanel;
-
-    private int keyCount = 0;
-    private const int RequiredKeys = 3;
+    [SerializeField] private TextMeshProUGUI descriptionText;
 
     private void Start()
     {
-        UpdateKeyText();
-        if (winPanel != null)
-            winPanel.SetActive(false);
+        ShowText("좀비를 피해 열쇠3개를 구하시오");
     }
 
     public void UpdateChargeUI(float ratio, bool isCharging)
@@ -32,28 +28,24 @@ public class PlayerUI : MonoBehaviour
         }
     }
 
-    public void AddKey()
+    public void UpdateKeyUI(int current, int required)
     {
-        keyCount++;
-        UpdateKeyText();
+        keyText.text = $"Key : {current} / {required}";
     }
 
-    public bool HasEnoughKeys() => keyCount >= RequiredKeys;
-
-    public void UseKeys()
+    public void ShowText(string message)
     {
-        keyCount -= RequiredKeys;
-        UpdateKeyText();
+        StopAllCoroutines(); // 이전 실행 중지 (중복 방지)
+
+        descriptionText.text = message;
+        descriptionText.gameObject.SetActive(true);
+
+        StartCoroutine(HideTextAfterTime(3f));
     }
 
-    private void UpdateKeyText()
+    private IEnumerator HideTextAfterTime(float time)
     {
-        keyText.text = $"Key : {keyCount} / {RequiredKeys}";
-    }
-
-    public void ShowWinScreen()
-    {
-        if (winPanel != null)
-            winPanel.SetActive(true);
+        yield return new WaitForSeconds(time);
+        descriptionText.gameObject.SetActive(false);
     }
 }

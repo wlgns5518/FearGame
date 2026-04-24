@@ -1,4 +1,3 @@
-// PlayerContext.cs
 using UnityEngine;
 
 public class PlayerContext
@@ -25,6 +24,15 @@ public class PlayerContext
     public bool isCharging;
     public float ChargeRatio => isCharging ? chargeTimer / data.chargeTime : 0f;
 
+    // Ű
+    private int keyCount = 0;
+    private const int RequiredKeys = 3;
+    public int KeyCount => keyCount;
+    public int KeyRequired => RequiredKeys;
+    public bool HasEnoughKeys() => keyCount >= RequiredKeys;
+    public void AddKey() => keyCount++;
+    public void UseKeys() => keyCount -= RequiredKeys;
+
     public void SetJumpPressed(bool value)
     {
         if (value) jumpTriggered = true;
@@ -42,10 +50,8 @@ public class PlayerContext
     {
         if (controller.isGrounded && verticalVelocity < 0f)
             verticalVelocity = data.groundedGravity;
-
         if ((controller.collisionFlags & CollisionFlags.Above) != 0 && verticalVelocity > 0f)
             verticalVelocity = 0f;
-
         verticalVelocity += data.gravity * Time.deltaTime;
     }
 
@@ -53,11 +59,9 @@ public class PlayerContext
     {
         Vector3 moveDir = Vector3.ClampMagnitude(
             transform.right * moveInput.x + transform.forward * moveInput.y, 1f);
-
         float speed = sprinting && controller.isGrounded
             ? data.moveSpeed * data.sprintMultiplier
             : data.moveSpeed;
-
         Vector3 velocity = moveDir * speed;
         velocity.y = verticalVelocity;
         controller.Move(velocity * Time.deltaTime);

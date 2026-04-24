@@ -1,11 +1,10 @@
-// PlayerController.cs
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     private PlayerHFSM hfsm;
     private PlayerLook look;
-    private PlayerUI ui;
+    public PlayerUI ui;
 
     private void Awake()
     {
@@ -14,6 +13,7 @@ public class PlayerController : MonoBehaviour
         ui = GetComponent<PlayerUI>();
         GameManager.Instance.player = this;
     }
+
     private void Update()
     {
         ui.UpdateChargeUI(
@@ -25,5 +25,22 @@ public class PlayerController : MonoBehaviour
     private void LateUpdate()
     {
         look.Look();
+    }
+
+    public void OnKeyPickup()
+    {
+        hfsm.Context.AddKey();
+        ui.UpdateKeyUI(hfsm.Context.KeyCount,hfsm.Context.KeyRequired);
+        if (hfsm.Context.HasEnoughKeys())
+            look.StartCinematic();
+    }
+
+    public void UseKeys()
+    {
+        hfsm.Context.UseKeys();
+    }
+    public bool HasEnoughKeys()
+    {
+        return hfsm.Context.HasEnoughKeys();
     }
 }

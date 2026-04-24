@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public PlayerController player;
+    public Door door;
 
     private void Awake()
     {
