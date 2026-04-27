@@ -29,7 +29,7 @@ public class PlayerChargeState : State<PlayerContext>
             float multiplier = ratio < 0.1f
                 ? 1f
                 : Mathf.Lerp(1f, context.data.superJumpMultiplier, ratio);
-
+            context.transform.GetComponent<PlayerSound>().PlayJump(); // Ãß°¡
             context.Jump(multiplier);
             parent.GoToIdle();
         }

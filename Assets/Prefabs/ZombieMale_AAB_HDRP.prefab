@@ -1176,7 +1176,7 @@ Transform:
   m_GameObject: {fileID: 2420795462371207337}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 47.155, y: 2.82, z: 39.14}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1290,9 +1290,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79fb73e54f2baa049ab2313afd7eed34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySound
-  footstepClip: {fileID: 8300000, guid: 02ff0a6c112ddd644bfc0fdbd7b8ea98, type: 3}
+  footstepClip: {fileID: 8300000, guid: 23ead155cc7c0e0409f505164d020f1e, type: 3}
   attackClip: {fileID: 8300000, guid: 68c5c54f091ab4d40a7468e7833bf092, type: 3}
-  footstepInterval: 0.4
+  footstepSource: {fileID: 0}
   footstepVolume: 0.5
   attackVolume: 1
 --- !u!1 &2602670972364210606

@@ -6,12 +6,11 @@ public class EnemySound : MonoBehaviour
     [SerializeField] private AudioClip footstepClip;
     [SerializeField] private AudioClip attackClip;
 
-    [SerializeField] private float footstepInterval = 0.4f;
     [SerializeField] private float footstepVolume = 0.5f;
     [SerializeField] private float attackVolume = 1f;
 
     private NavMeshAgent agent;
-    private float footstepTimer;
+    private bool isPlayingFootstep = false;
 
     private void Start()
     {
@@ -26,17 +25,11 @@ public class EnemySound : MonoBehaviour
     private void HandleFootstep()
     {
         bool isMoving = agent != null && agent.enabled && agent.velocity.magnitude > 0.5f;
-        if (!isMoving)
-        {
-            footstepTimer = 0f;
-            return;
-        }
 
-        footstepTimer += Time.deltaTime;
-        if (footstepTimer >= footstepInterval)
+        if (isMoving && !isPlayingFootstep)
         {
-            footstepTimer = 0f;
-            SoundManager.Instance?.PlayAt(footstepClip, transform.position, footstepVolume);
+            isPlayingFootstep = true;
+            SoundManager.Instance?.PlayAt(footstepClip,transform.position,footstepVolume);
         }
     }
 

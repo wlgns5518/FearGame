@@ -22,9 +22,15 @@ public class PlayerIdleState : State<PlayerContext>
         {
             context.transform.GetComponent<PlayerSound>().PlayJump(); // 추가
             if (context.sprinting)
+            {
+                context.transform.GetComponent<PlayerSound>().PlayJump(); // 추가
                 parent.GoToCharge();
+            }
             else
+            {
+                context.transform.GetComponent<PlayerSound>().PlayJump();
                 context.Jump();
+            }
         }
     }
 

@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 public class EnemyAttackState : State<EnemyContext>
 {
@@ -36,7 +38,7 @@ public class EnemyAttackState : State<EnemyContext>
 
     private void Attack()
     {
-        playerRespawn?.Respawn();
         context.transform.GetComponent<EnemySound>()?.PlayAttack();
+        playerRespawn?.Respawn();
     }
 }
