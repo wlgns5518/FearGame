@@ -31,11 +31,11 @@ public class Door : MonoBehaviour
         {
             isTriggered = true;
             player.UseKeys();
-            player.ui.ShowText("you win");
+            player.ui.OnPopUpOpen("이겼습니다.");
         }
         else
         {
-            Debug.Log("열쇠가 부족합니다.");
+            player.ui.OnPopUpOpen("열쇠가 부족합니다.");
         }
     }
 }

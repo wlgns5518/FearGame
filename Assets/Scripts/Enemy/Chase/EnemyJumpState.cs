@@ -13,6 +13,7 @@ public class EnemyJumpState : State<EnemyContext>
     {
         fallTimer = 0f;
         context.agent.enabled = false;
+        context.animator?.Play("Jump");
         float heightDiff = context.player.position.y - context.transform.position.y;
         float targetHeight = Mathf.Max(heightDiff + 3f, context.data.jumpHeight);
         float multiplier = targetHeight / context.data.jumpHeight;

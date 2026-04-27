@@ -17,11 +17,13 @@ public class EnemyWalkState : State<EnemyContext>
     {
         stuckTimer = 0f;
         lastPosition = context.transform.position;
+        context.animator?.Play("Walk");
         MoveToRandom();
     }
 
     public override void Update()
     {
+        context.sound?.PlayFootstep();
         if (context.agent.pathPending) return;
 
         // 목적지 도착

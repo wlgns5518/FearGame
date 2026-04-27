@@ -8,6 +8,8 @@ public class EnemyContext
     public Transform player;
     public EnemyData data;
     public CharacterController controller;
+    public Animator animator;
+    public EnemySound sound;
 
     public float waitTimer;
     public float attackTimer;

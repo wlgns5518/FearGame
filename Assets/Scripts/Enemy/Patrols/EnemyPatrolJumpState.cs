@@ -14,6 +14,7 @@ public class EnemyPatrolJumpState : State<EnemyContext>
     {
         fallTimer = 0f;
         context.agent.enabled = false;
+        context.animator?.Play("Jump");
         context.Jump(1f);
     }
 

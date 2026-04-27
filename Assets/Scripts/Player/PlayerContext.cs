@@ -5,6 +5,7 @@ public class PlayerContext
     // 컴포넌트 참조
     public CharacterController controller;
     public Transform transform;
+    public Animator animator; // 추가
 
     // 데이터
     public PlayerData data;
@@ -32,6 +33,41 @@ public class PlayerContext
     public bool HasEnoughKeys() => keyCount >= RequiredKeys;
     public void AddKey() => keyCount++;
     public void UseKeys() => keyCount -= RequiredKeys;
+    public bool lanternOn = false;
+    public GameObject lantern; // 추가
+                               // HP 관련
+    private int currentHp;
+    private int maxHp = 3;
+    public int CurrentHp => currentHp;
+    public int MaxHp => maxHp;
+
+    public void InitHp() => currentHp = maxHp;
+    public void TakeDamage(int amount = 1)
+    {
+        currentHp -= amount;
+        currentHp = Mathf.Clamp(currentHp, 0, maxHp);
+    }
+
+    // 랜턴 상태 변경 시 외부에서 처리할 수 있도록 콜백 추가
+    public System.Action<bool> onLanternToggled;
+
+    public void ToggleLantern()
+    {
+        lanternOn = !lanternOn;
+        if (lanternOn)
+        {
+            animator.SetLayerWeight(1, 1f);
+            animator.Play("Lamp", 1);
+            lantern.SetActive(true);
+        }
+        else
+        {
+            animator.SetLayerWeight(1, 0f);
+            lantern.SetActive(false);
+        }
+
+        onLanternToggled?.Invoke(lanternOn); // 콜백 호출
+    }
 
     public void SetJumpPressed(bool value)
     {

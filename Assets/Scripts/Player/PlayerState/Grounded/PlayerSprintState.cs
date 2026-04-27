@@ -1,4 +1,3 @@
-// AirState.GoToCharge() → GroundedState.GoToCharge()로 변경
 public class PlayerSprintState : State<PlayerContext>
 {
     private PlayerGroundedState parent;
@@ -8,8 +7,10 @@ public class PlayerSprintState : State<PlayerContext>
         this.parent = parent;
     }
 
-    public override void Enter() { }
-
+    public override void Enter()
+    {
+        context.animator.Play("Sprint");
+    }
     public override void Update()
     {
         if (!context.sprinting)
@@ -24,10 +25,9 @@ public class PlayerSprintState : State<PlayerContext>
             return;
         }
 
-        // 스프린트 중 점프 → ChargeState (땅에서)
         if (context.ConsumeJumpTriggered())
         {
-            parent.GoToCharge(); // 변경
+            parent.GoToCharge(); 
         }
     }
 

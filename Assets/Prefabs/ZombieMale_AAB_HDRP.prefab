@@ -1156,7 +1156,6 @@ GameObject:
   - component: {fileID: 1891319069035039752}
   - component: {fileID: 5809216605530064675}
   - component: {fileID: 229966989742730336}
-  - component: {fileID: 2219883048976242106}
   - component: {fileID: 3069202381080382227}
   - component: {fileID: 1039808342645522015}
   - component: {fileID: 6138765358563022568}
@@ -1228,18 +1227,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &2219883048976242106
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2420795462371207337}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 808015f610a6aac4ea6442878271cd60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation
 --- !u!114 &3069202381080382227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1292,8 +1279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySound
   footstepClip: {fileID: 8300000, guid: 23ead155cc7c0e0409f505164d020f1e, type: 3}
   attackClip: {fileID: 8300000, guid: 68c5c54f091ab4d40a7468e7833bf092, type: 3}
-  footstepSource: {fileID: 0}
-  footstepVolume: 0.5
+  footstepVolume: 1
   attackVolume: 1
 --- !u!1 &2602670972364210606
 GameObject:

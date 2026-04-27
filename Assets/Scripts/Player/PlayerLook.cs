@@ -20,14 +20,15 @@ public class PlayerLook : MonoBehaviour
     private Quaternion cinematicTargetRot;
     private void Start()
     {
-        LockCursor();
         cinematicTarget = GameManager.Instance.door.transform;
     }
     public void SetLookInput(Vector2 input)
     {
         if (isCinematic) return;
+        if (Cursor.lockState != CursorLockMode.Locked) return; // 추가
         lookInput = input;
     }
+
     public void Look()
     {
         if (isCinematic)
@@ -35,6 +36,8 @@ public class PlayerLook : MonoBehaviour
             PlayCinematic();
             return;
         }
+        if (Cursor.lockState != CursorLockMode.Locked) return; // 추가
+
         float mouseX = lookInput.x * sensitivity;
         float mouseY = lookInput.y * sensitivity;
         xRotation -= mouseY;
@@ -51,7 +54,7 @@ public class PlayerLook : MonoBehaviour
         cinematicStartRot = cameraTransform.rotation;
         cinematicTargetPos = cinematicTarget.position + new Vector3(-2f, 2f, -5f);
         cinematicTargetRot = Quaternion.Euler(0f, 0f, 0f);
-        Time.timeScale = 0f;
+        GameManager.Instance.PauseGame();
     }
     private void PlayCinematic()
     {
@@ -65,14 +68,20 @@ public class PlayerLook : MonoBehaviour
     }
     private void EndCinematic()
     {
-        Time.timeScale = 1f;
+        GameManager.Instance.ResumeGame();
         isCinematic = false;
         cinematicTimer = 0f;
         cameraTransform.localPosition = new Vector3(0, 0.5f, 0.2f);
         xRotation = cameraTransform.localEulerAngles.x;
         if (xRotation > 180f) xRotation -= 360f;
     }
-    private static void LockCursor()
+    public static void UnlockCursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    public static void LockCursor()  // private → public static 으로 변경
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

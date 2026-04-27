@@ -10,6 +10,7 @@ public class PlayerInputHandler : MonoBehaviour
     private PlayerInput playerInput;
     private InputAction sprintAction;
     private InputAction jumpAction;
+    private InputAction lanternAction; // 추가
 
     private void Awake()
     {
@@ -18,6 +19,7 @@ public class PlayerInputHandler : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         sprintAction = playerInput.actions["Sprint"];
         jumpAction = playerInput.actions["Jump"];
+        lanternAction = playerInput.actions["Lantern"]; // 추가
     }
 
     private void OnEnable()
@@ -26,6 +28,7 @@ public class PlayerInputHandler : MonoBehaviour
         sprintAction.canceled += OnSprintCanceled;
         jumpAction.performed += OnJumpPerformed;
         jumpAction.canceled += OnJumpCanceled;
+        lanternAction.performed += OnLanternPerformed; // 추가
     }
 
     private void OnDisable()
@@ -34,7 +37,11 @@ public class PlayerInputHandler : MonoBehaviour
         sprintAction.canceled -= OnSprintCanceled;
         jumpAction.performed -= OnJumpPerformed;
         jumpAction.canceled -= OnJumpCanceled;
+        lanternAction.performed -= OnLanternPerformed; // 추가
     }
+
+    private void OnLanternPerformed(InputAction.CallbackContext ctx)
+        => hfsm.Context.ToggleLantern(); // 추가
 
     public void OnMove(InputValue value)
     {

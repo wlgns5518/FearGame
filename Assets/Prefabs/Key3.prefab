@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6427228219531949647}
   - component: {fileID: 6856994516981389567}
   - component: {fileID: 5794636072856742130}
+  - component: {fileID: 6986515776673547115}
   m_Layer: 0
   m_Name: Key3
   m_TagString: Untagged
@@ -123,5 +124,19 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5, y: 0.2, z: 0.5}
-  m_Center: {x: 0, y: 0.1, z: 0}
+  m_Size: {x: 1, y: 0.5, z: 1}
+  m_Center: {x: 0, y: 0.2, z: 0}
+--- !u!114 &6986515776673547115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7756496594209491955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6be46cc87b47b94697836af9bd53193, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeySound
+  pickupSound: {fileID: 8300000, guid: b0770cec09fde8d47b0dd5a1210a0d10, type: 3}
+  volume: 1

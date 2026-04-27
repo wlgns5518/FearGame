@@ -12,6 +12,7 @@ public class EnemyHFSM : HFSMRunner<EnemyContext>
     protected override void Awake()
     {
         base.Awake();
+        context.animator = GetComponentInChildren<Animator>();
     }
 
     protected override EnemyContext CreateContext()

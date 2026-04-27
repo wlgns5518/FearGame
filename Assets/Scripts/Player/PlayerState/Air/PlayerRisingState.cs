@@ -8,8 +8,10 @@ public class PlayerRisingState : State<PlayerContext>
         this.parent = parent;
     }
 
-    public override void Enter() { }
-
+    public override void Enter()
+    {
+        context.animator.Play("Jump");
+    }
     public override void Update()
     {
         if (context.verticalVelocity < 0f)

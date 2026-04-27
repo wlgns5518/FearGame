@@ -13,7 +13,7 @@ public class EnemyWaitState : State<EnemyContext>
     public override void Enter()
     {
         context.waitTimer = 0f;
-
+        context.animator?.Play("Idle");
         if (context.agent.enabled && context.agent.isOnNavMesh)
             context.agent.ResetPath();
     }

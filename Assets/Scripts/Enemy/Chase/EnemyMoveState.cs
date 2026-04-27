@@ -17,10 +17,12 @@ public class EnemyMoveState : State<EnemyContext>
     {
         stuckTimer = 0f;
         lastPosition = context.transform.position;
+        context.animator?.Play("Chase");
     }
 
     public override void Update()
     {
+        context.sound?.PlayFootstep();
         context.MoveToPosition(context.player.position, context.data.chaseSpeed);
 
         if (context.PlayerInAttackRange)

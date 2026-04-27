@@ -1,17 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections;
 
 public class PlayerUI : MonoBehaviour
 {
     [SerializeField] private Slider chargeSlider;
     [SerializeField] private TextMeshProUGUI keyText;
     [SerializeField] private TextMeshProUGUI descriptionText;
+    [SerializeField] private GameObject popUpPanel;
+    [SerializeField] private GameObject[] hearts;
+    private bool isFirstClose = true;
 
     private void Start()
     {
-        ShowText("좀비를 피해 열쇠3개를 구하시오");
+        OnPopUpOpen("[조작 방법]\r\nWASD : 이동\r\nShift : 대쉬\r\nSpace : 점프\r\nShift + Space : 슈퍼 점프\r\n1 : 램프 ON/OFF");
     }
 
     public void UpdateChargeUI(float ratio, bool isCharging)
@@ -33,19 +35,33 @@ public class PlayerUI : MonoBehaviour
         keyText.text = $"Key : {current} / {required}";
     }
 
-    public void ShowText(string message)
+    public void UpdateHeartUI(int hp)
     {
-        StopAllCoroutines(); // 이전 실행 중지 (중복 방지)
+        for (int i = 0; i < hearts.Length; i++)
+            hearts[i].SetActive(i < hp);
 
-        descriptionText.text = message;
-        descriptionText.gameObject.SetActive(true);
-
-        StartCoroutine(HideTextAfterTime(3f));
+        if (hp <= 0)
+            OnPopUpOpen("게임 오버!");
     }
 
-    private IEnumerator HideTextAfterTime(float time)
+    public void OnPopUpClose()
     {
-        yield return new WaitForSeconds(time);
-        descriptionText.gameObject.SetActive(false);
+        if (popUpPanel != null)
+            popUpPanel.SetActive(false);
+        GameManager.Instance.ResumeGame();
+        PlayerLook.LockCursor();
+        if (isFirstClose)
+        {
+            isFirstClose = false;
+            OnPopUpOpen("좀비를 피해 열쇠 3개를 모으세요");
+        }
+    }
+
+    public void OnPopUpOpen(string text)
+    {
+        popUpPanel.SetActive(true);
+        PlayerLook.UnlockCursor();
+        GameManager.Instance.PauseGame();
+        descriptionText.text = text;
     }
 }

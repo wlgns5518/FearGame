@@ -8,8 +8,10 @@ public class PlayerWalkState : State<PlayerContext>
         this.parent = parent;
     }
 
-    public override void Enter() { }
-
+    public override void Enter()
+    {
+        context.animator.Play("Walk");
+    }
     public override void Update()
     {
         if (context.moveInput.magnitude <= 0.01f)

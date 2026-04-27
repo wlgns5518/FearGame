@@ -8,7 +8,10 @@ public class EnemyFallingState : State<EnemyContext>
         this.parent = parent;
     }
 
-    public override void Enter() { }
+    public override void Enter()
+    {
+        context.animator?.Play("Falling");
+    }
 
     public override void Update()
     {

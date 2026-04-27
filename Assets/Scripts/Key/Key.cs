@@ -6,6 +6,10 @@ public class Key : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
         other.GetComponent<PlayerController>()?.OnKeyPickup();
+
+        // KeySound »£√‚
+        GetComponent<KeySound>()?.PlayPickupSound();
+
         Destroy(gameObject);
     }
 }

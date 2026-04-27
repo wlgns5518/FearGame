@@ -1,40 +1,26 @@
 using UnityEngine;
-using UnityEngine.AI;
-
 public class EnemySound : MonoBehaviour
 {
     [SerializeField] private AudioClip footstepClip;
     [SerializeField] private AudioClip attackClip;
-
-    [SerializeField] private float footstepVolume = 0.5f;
+    [SerializeField] private float footstepVolume = 1f;
     [SerializeField] private float attackVolume = 1f;
+    [SerializeField] private float footstepInterval = 0.4f;
 
-    private NavMeshAgent agent;
-    private bool isPlayingFootstep = false;
+    private float footstepTimer = 0f;
 
-    private void Start()
+    public void PlayFootstep()
     {
-        agent = GetComponent<NavMeshAgent>();
-    }
-
-    private void Update()
-    {
-        HandleFootstep();
-    }
-
-    private void HandleFootstep()
-    {
-        bool isMoving = agent != null && agent.enabled && agent.velocity.magnitude > 0.5f;
-
-        if (isMoving && !isPlayingFootstep)
+        footstepTimer -= Time.deltaTime;
+        if (footstepTimer <= 0f)
         {
-            isPlayingFootstep = true;
-            SoundManager.Instance?.PlayAt(footstepClip,transform.position,footstepVolume);
+            SoundManager.Instance?.PlayAt(footstepClip, transform.position, footstepVolume);
+            footstepTimer = footstepInterval;
         }
     }
 
     public void PlayAttack()
     {
-        SoundManager.Instance?.PlayAt(attackClip, transform.position, attackVolume);
+        SoundManager.Instance?.Play(attackClip, attackVolume);
     }
 }

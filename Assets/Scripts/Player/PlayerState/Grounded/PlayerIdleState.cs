@@ -8,7 +8,10 @@ public class PlayerIdleState : State<PlayerContext>
         this.parent = parent;
     }
 
-    public override void Enter() { }
+    public override void Enter()
+    {
+        context.animator.Play("Idle");
+    }
 
     public override void Update()
     {

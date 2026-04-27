@@ -5,6 +5,7 @@ public class EnemyAttackState : State<EnemyContext>
 {
     private EnemyChaseState parent;
     private PlayerRespawn playerRespawn;
+    private PlayerController playerController;
 
     public EnemyAttackState(EnemyContext context, EnemyChaseState parent) : base(context)
     {
@@ -15,7 +16,9 @@ public class EnemyAttackState : State<EnemyContext>
     {
         context.attackTimer = 0f;
         context.ResetPath();
+        context.animator?.Play("Attack");
         playerRespawn = context.player.GetComponent<PlayerRespawn>();
+        playerController = context.player.GetComponent<PlayerController>();
     }
 
     public override void Update()
@@ -40,5 +43,6 @@ public class EnemyAttackState : State<EnemyContext>
     {
         context.transform.GetComponent<EnemySound>()?.PlayAttack();
         playerRespawn?.Respawn();
+        playerController.TakeDamage();
     }
 }

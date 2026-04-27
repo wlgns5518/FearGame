@@ -9,8 +9,9 @@ public class EnemyData : ScriptableObject
     public float chaseSpeed = 5f;
 
     [Header("Detection")]
-    public float detectionRange = 10f;
+    public float detectionRange = 20f;
     public float attackRange = 2f;
+
 
     [Header("Patrol")]
     public float waitTime = 2f;
