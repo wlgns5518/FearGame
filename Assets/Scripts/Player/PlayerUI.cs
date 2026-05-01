@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerUI : MonoBehaviour
 {
@@ -9,13 +10,19 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private GameObject popUpPanel;
     [SerializeField] private GameObject[] hearts;
+
     private bool isFirstClose = true;
+
+    public bool IsPopUpOpen => popUpPanel != null && popUpPanel.activeSelf;
 
     private void Start()
     {
-        OnPopUpOpen("[조작 방법]\r\nWASD : 이동\r\nShift : 대쉬\r\nSpace : 점프\r\nShift + Space : 슈퍼 점프\r\n1 : 램프 ON/OFF");
+        OnPopUpOpen("[조작 방법]\nWASD : 이동\nShift : 대쉬\nSpace : 점프\nShift + Space : 슈퍼 점프\n1 : 램프 ON/OFF");
     }
 
+    // ========================
+    // HUD 업데이트
+    // ========================
     public void UpdateChargeUI(float ratio, bool isCharging)
     {
         if (isCharging)
@@ -39,17 +46,31 @@ public class PlayerUI : MonoBehaviour
     {
         for (int i = 0; i < hearts.Length; i++)
             hearts[i].SetActive(i < hp);
+    }
 
-        if (hp <= 0)
-            OnPopUpOpen("게임 오버!");
+    // ========================
+    // 팝업
+    // ========================
+    public void OnPopUpOpen(string text)
+    {
+        popUpPanel.SetActive(true);
+        descriptionText.text = text;
+        PlayerLook.UnlockCursor();
+        GameManager.Instance.PauseGame();
     }
 
     public void OnPopUpClose()
     {
+        if(GameManager.Instance.gameOver)
+        {
+            SceneManager.LoadScene(0);
+        }
         if (popUpPanel != null)
             popUpPanel.SetActive(false);
+
         GameManager.Instance.ResumeGame();
         PlayerLook.LockCursor();
+
         if (isFirstClose)
         {
             isFirstClose = false;
@@ -57,11 +78,18 @@ public class PlayerUI : MonoBehaviour
         }
     }
 
-    public void OnPopUpOpen(string text)
+    // ========================
+    // ESC 토글 (PlayerHFSM이 연결)
+    // ========================
+    public void OnPauseToggle()
     {
-        popUpPanel.SetActive(true);
-        PlayerLook.UnlockCursor();
-        GameManager.Instance.PauseGame();
-        descriptionText.text = text;
+        // 팝업이 열려있으면 ESC 무시
+        if (IsPopUpOpen) return;
+        if (UIManager.Instance == null) return;
+
+        if (UIManager.Instance.IsSettingPanelOpen)
+            UIManager.Instance.CloseSettingPanel();
+        else
+            UIManager.Instance.OpenSettingPanel();
     }
 }

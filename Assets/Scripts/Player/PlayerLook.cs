@@ -1,14 +1,18 @@
 using UnityEngine;
+
 public class PlayerLook : MonoBehaviour
 {
     [SerializeField] private Transform cameraTransform;
+
     [Header("Look")]
     [SerializeField] private float minAngle = -30f;
     [SerializeField] private float maxAngle = 40f;
     [SerializeField] private float sensitivity = 0.1f;
+
     [Header("Cinematic")]
     [SerializeField] private float cinematicMoveDuration = 3f;
     [SerializeField] private float cinematicStayDuration = 2f;
+
     private float xRotation;
     private Vector2 lookInput;
     private bool isCinematic = false;
@@ -18,14 +22,24 @@ public class PlayerLook : MonoBehaviour
     private Quaternion cinematicStartRot;
     private Vector3 cinematicTargetPos;
     private Quaternion cinematicTargetRot;
+
     private void Start()
     {
         cinematicTarget = GameManager.Instance.door.transform;
+        ApplySensitivity(); // 분리
     }
+
+    // 외부(SettingPanel 등)에서 호출해서 즉시 반영
+    public void ApplySensitivity()
+    {
+        float sliderValue = PlayerPrefs.GetFloat("Sensitivity", 1f);
+        sensitivity = Mathf.Lerp(0.05f, 0.3f, sliderValue);
+    }
+
     public void SetLookInput(Vector2 input)
     {
         if (isCinematic) return;
-        if (Cursor.lockState != CursorLockMode.Locked) return; // 추가
+        if (Cursor.lockState != CursorLockMode.Locked) return;
         lookInput = input;
     }
 
@@ -36,7 +50,7 @@ public class PlayerLook : MonoBehaviour
             PlayCinematic();
             return;
         }
-        if (Cursor.lockState != CursorLockMode.Locked) return; // 추가
+        if (Cursor.lockState != CursorLockMode.Locked) return;
 
         float mouseX = lookInput.x * sensitivity;
         float mouseY = lookInput.y * sensitivity;
@@ -45,6 +59,7 @@ public class PlayerLook : MonoBehaviour
         transform.Rotate(Vector3.up * mouseX);
         cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
     }
+
     public void StartCinematic()
     {
         if (cinematicTarget == null) return;
@@ -56,6 +71,7 @@ public class PlayerLook : MonoBehaviour
         cinematicTargetRot = Quaternion.Euler(0f, 0f, 0f);
         GameManager.Instance.PauseGame();
     }
+
     private void PlayCinematic()
     {
         cinematicTimer += Time.unscaledDeltaTime;
@@ -63,9 +79,11 @@ public class PlayerLook : MonoBehaviour
         float smoothT = Mathf.SmoothStep(0f, 1f, t);
         cameraTransform.position = Vector3.Lerp(cinematicStartPos, cinematicTargetPos, smoothT);
         cameraTransform.rotation = Quaternion.Slerp(cinematicStartRot, cinematicTargetRot, smoothT);
+
         if (cinematicTimer >= cinematicMoveDuration + cinematicStayDuration)
             EndCinematic();
     }
+
     private void EndCinematic()
     {
         GameManager.Instance.ResumeGame();
@@ -75,13 +93,14 @@ public class PlayerLook : MonoBehaviour
         xRotation = cameraTransform.localEulerAngles.x;
         if (xRotation > 180f) xRotation -= 360f;
     }
+
     public static void UnlockCursor()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
-    public static void LockCursor()  // private → public static 으로 변경
+    public static void LockCursor()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

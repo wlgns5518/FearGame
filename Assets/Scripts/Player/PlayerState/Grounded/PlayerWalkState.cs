@@ -12,6 +12,7 @@ public class PlayerWalkState : State<PlayerContext>
     {
         context.animator.Play("Walk");
     }
+
     public override void Update()
     {
         if (context.moveInput.magnitude <= 0.01f)
@@ -28,7 +29,7 @@ public class PlayerWalkState : State<PlayerContext>
 
         if (context.ConsumeJumpTriggered())
         {
-            context.transform.GetComponent<PlayerSound>().PlayJump(); // 추가
+            context.sound.PlayJump(); // 캐싱된 참조 사용
             context.Jump();
         }
     }

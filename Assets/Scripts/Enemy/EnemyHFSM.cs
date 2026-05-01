@@ -13,11 +13,11 @@ public class EnemyHFSM : HFSMRunner<EnemyContext>
     {
         base.Awake();
         context.animator = GetComponentInChildren<Animator>();
+        context.sound = GetComponentInChildren<EnemySound>(); // 추가
     }
 
     protected override EnemyContext CreateContext()
     {
-        // GameManager에서 플레이어 가져오기
         Transform player = GameManager.Instance.player.transform;
 
         return new EnemyContext

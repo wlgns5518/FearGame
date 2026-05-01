@@ -1,11 +1,11 @@
+using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
-
 public class EnemyMoveState : State<EnemyContext>
 {
     private EnemyChaseState parent;
     private float stuckTimer;
     private const float StuckThreshold = 1.5f;
+    private const float StuckSqrDistance = 0.01f; // 0.1f * 0.1f
     private Vector3 lastPosition;
 
     public EnemyMoveState(EnemyContext context, EnemyChaseState parent) : base(context)
@@ -33,24 +33,31 @@ public class EnemyMoveState : State<EnemyContext>
 
         if (context.agent.pathPending) return;
 
-        // 경로 막힘 or 장애물 → 점프
         if (context.IsPathBlocked() || context.ObstacleAhead())
         {
             parent.GoToJump();
             return;
         }
 
-        // 높이 차이 → 점프
         float heightDiff = context.player.position.y - context.transform.position.y;
+
+        // 플레이어가 위에 있을 때 → 점프
         if (heightDiff >= 3f)
         {
             parent.GoToJump();
             return;
         }
 
-        // stuck → 점프
-        float moved = Vector3.Distance(context.transform.position, lastPosition);
-        if (moved < 0.1f)
+        // 플레이어가 아래에 있을 때 → 낙하 상태로 전환
+        if (heightDiff <= -2f)
+        {
+            parent.GoToFalling();
+            return;
+        }
+
+        // sqrMagnitude로 sqrt 연산 절약
+        float sqrMoved = (context.transform.position - lastPosition).sqrMagnitude;
+        if (sqrMoved < StuckSqrDistance)
         {
             stuckTimer += Time.deltaTime;
             if (stuckTimer >= StuckThreshold)

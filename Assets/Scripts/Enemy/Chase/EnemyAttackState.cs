@@ -17,6 +17,7 @@ public class EnemyAttackState : State<EnemyContext>
         context.attackTimer = 0f;
         context.ResetPath();
         context.animator?.Play("Attack");
+        // Enter에서 한 번만 캐싱
         playerRespawn = context.player.GetComponent<PlayerRespawn>();
         playerController = context.player.GetComponent<PlayerController>();
     }
@@ -41,8 +42,8 @@ public class EnemyAttackState : State<EnemyContext>
 
     private void Attack()
     {
-        context.transform.GetComponent<EnemySound>()?.PlayAttack();
+        context.sound?.PlayAttack(); // GetComponent 제거, 캐싱된 sound 사용
         playerRespawn?.Respawn();
-        playerController.TakeDamage();
+        playerController?.TakeDamage();
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public PlayerHFSM hfsm;
-    private PlayerLook look;
+    public PlayerLook look;
     public PlayerUI ui;
 
     [SerializeField] private EnemyData enemyData;
@@ -56,11 +56,6 @@ public class PlayerController : MonoBehaviour
         ui.UpdateKeyUI(hfsm.Context.KeyCount, hfsm.Context.KeyRequired);
         if (hfsm.Context.HasEnoughKeys())
             look.StartCinematic();
-    }
-
-    public void UseKeys()
-    {
-        hfsm.Context.UseKeys();
     }
 
     public bool HasEnoughKeys()

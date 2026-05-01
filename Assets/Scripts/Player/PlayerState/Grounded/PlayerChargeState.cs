@@ -1,4 +1,3 @@
-// PlayerChargeState.cs
 using UnityEngine;
 
 public class PlayerChargeState : State<PlayerContext>
@@ -29,7 +28,7 @@ public class PlayerChargeState : State<PlayerContext>
             float multiplier = ratio < 0.1f
                 ? 1f
                 : Mathf.Lerp(1f, context.data.superJumpMultiplier, ratio);
-            context.transform.GetComponent<PlayerSound>().PlayJump(); // 추가
+            context.sound.PlayJump(); // 캐싱된 참조 사용
             context.Jump(multiplier);
             parent.GoToIdle();
         }

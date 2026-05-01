@@ -15,15 +15,31 @@ public class EnemyContext
     public float attackTimer;
     public float verticalVelocity;
 
+    // 캐싱 (매 호출마다 new 방지)
+    private static readonly float[] WarpRadii = { 1f, 2f, 3f, 5f };
+
+    // ========================
+    // 거리 계산
+    // ========================
+    private float SqrDistanceToPlayer =>
+        (transform.position - player.position).sqrMagnitude;
+
+    // sqrt 필요한 곳에서만 사용
     public float DistanceToPlayer =>
-        Vector3.Distance(transform.position, player.position);
+        (transform.position - player.position).magnitude; // Vector3.Distance 제거
+
     public bool PlayerInDetectionRange =>
-        DistanceToPlayer <= data.detectionRange;
+        SqrDistanceToPlayer <= data.detectionRange * data.detectionRange;
+
     public bool PlayerInAttackRange =>
-        DistanceToPlayer <= data.attackRange;
+        SqrDistanceToPlayer <= data.attackRange * data.attackRange;
+
     public bool PlayerIsAbove =>
         player.position.y > transform.position.y + 1f;
 
+    // ========================
+    // 이동
+    // ========================
     public void MoveToPosition(Vector3 position, float speed)
     {
         if (!agent.enabled || !agent.isOnNavMesh) return;
@@ -54,7 +70,9 @@ public class EnemyContext
             agent.ResetPath();
     }
 
+    // ========================
     // 장애물 감지
+    // ========================
     public bool ObstacleAhead()
     {
         return Physics.Raycast(
@@ -64,18 +82,20 @@ public class EnemyContext
         );
     }
 
-    // 점프
+    // ========================
+    // 점프 / 중력
+    // ========================
     public void Jump(float multiplier = 1f)
     {
         float finalJumpHeight = data.jumpHeight * multiplier;
         verticalVelocity = Mathf.Sqrt(finalJumpHeight * -2f * data.gravity);
     }
 
-    // 점프 중 이동
     public void ApplyGravityAndMove()
     {
         if (controller.isGrounded && verticalVelocity < 0f)
             verticalVelocity = data.groundedGravity;
+
         if ((controller.collisionFlags & CollisionFlags.Above) != 0 && verticalVelocity > 0f)
             verticalVelocity = 0f;
 
@@ -83,18 +103,19 @@ public class EnemyContext
 
         Vector3 direction = (player.position - transform.position).normalized;
         direction.y = 0f;
+
         Vector3 velocity = direction * data.chaseSpeed;
         velocity.y = verticalVelocity;
         controller.Move(velocity * Time.deltaTime);
     }
 
-    // 착지 후 NavMesh 복귀
+    // ========================
+    // NavMesh 복구
+    // ========================
     public bool WarpToNavMesh()
     {
-        float[] radii = { 1f, 2f, 3f, 5f };
         NavMeshHit hit;
-
-        foreach (float radius in radii)
+        foreach (float radius in WarpRadii) // static readonly로 캐싱
         {
             if (NavMesh.SamplePosition(transform.position, out hit, radius, NavMesh.AllAreas))
             {
@@ -107,8 +128,7 @@ public class EnemyContext
                 return true;
             }
         }
-
-        Debug.LogWarning("착지 위치 근처에 NavMesh가 없습니다.");
+        Debug.LogWarning("현재 위치 근처에 NavMesh가 없습니다.");
         return false;
     }
 }

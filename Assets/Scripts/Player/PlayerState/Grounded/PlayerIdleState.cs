@@ -23,17 +23,11 @@ public class PlayerIdleState : State<PlayerContext>
 
         if (context.ConsumeJumpTriggered())
         {
-            context.transform.GetComponent<PlayerSound>().PlayJump(); // 추가
+            context.sound.PlayJump(); // 캐싱된 참조 사용, 중복 제거
             if (context.sprinting)
-            {
-                context.transform.GetComponent<PlayerSound>().PlayJump(); // 추가
                 parent.GoToCharge();
-            }
             else
-            {
-                context.transform.GetComponent<PlayerSound>().PlayJump();
                 context.Jump();
-            }
         }
     }
 
